@@ -2,25 +2,23 @@
 """
 gravity_gauntlet.py - final revision of main file
 Author: Freya Marika
+github: https://github.com/DemonessFreya/gravity_gauntlet
 
 Date: 12/06/2024 - 14/06/2024
+
+Sources used: https://realpython.com/pygame-a-primer/ ; https://github.com/Rabbid76/PyGameExamplesAndAnswers/blob/master/documentation/pygame/pygame_jump.md
 """
 #***********************************************
 
 # Import the pygame module
 import pygame
-import random
+import Sprites # imports the Sprites.py file
 
 
 # Import pygame.locals for easier access to key coordinates
 # Updated to conform to flake8 and black standards
 # from pygame.locals import *
 from pygame.locals import (
-    RLEACCEL,
-    K_UP,
-    K_DOWN,
-    K_LEFT,
-    K_RIGHT,
     K_ESCAPE,
     KEYDOWN,
     QUIT,
@@ -42,106 +40,14 @@ screen = pygame.display.set_mode((SCREEN_WIDTH, SCREEN_HEIGHT))
 pygame.display.set_caption("Gravity Gauntlet")
 
 
-# Define the Player object by extending pygame.sprite.Sprite
-# Instead of a surface, use an image for a better-looking sprite
-class Player(pygame.sprite.Sprite):
-    def __init__(self):
-        super(Player, self).__init__()
-        self.surf = pygame.image.load("Sprites/Tiles/Characters/tile_0002.png").convert()
-        self.surf.set_colorkey((0, 0, 0), RLEACCEL)
-        self.surf = pygame.transform.scale(self.surf, [25, 25])
-        self.rect = self.surf.get_rect(center=(
-            -SCREEN_WIDTH + 50,
-            SCREEN_HEIGHT,
-        ))
-
-    # Move the sprite based on user keypresses
-    def update(self, pressed_keys):
-        if pressed_keys[K_UP]:
-            self.rect.move_ip(0, -5)
-        if pressed_keys[K_DOWN]:
-            self.rect.move_ip(0, 5)
-        if pressed_keys[K_LEFT]:
-            self.rect.move_ip(-5, 0)
-        if pressed_keys[K_RIGHT]:
-            self.rect.move_ip(5, 0)
-
-        # Keep player on the screen
-        if self.rect.left < 0:
-            self.rect.left = 0
-        if self.rect.right > SCREEN_WIDTH:
-            self.rect.right = SCREEN_WIDTH
-        if self.rect.top <= 0:
-            self.rect.top = 0
-        if self.rect.bottom >= 500:
-            self.rect.bottom = 500
-
-# Define the enemy object by extending pygame.sprite.Sprite
-# Instead of a surface, use an image for a better-looking sprite
-class Enemy(pygame.sprite.Sprite):
-    def __init__(self):
-        super(Enemy, self).__init__()
-        self.surf = pygame.image.load("Sprites/Planets/planet06.png").convert()
-        self.surf.set_colorkey((0, 0, 0), RLEACCEL)
-        self.surf = pygame.transform.scale(self.surf, [20, 20])
-        # The starting position is randomly generated, as is the speed
-        self.rect = self.surf.get_rect(
-            center=(
-                random.randint(SCREEN_WIDTH + 20, SCREEN_WIDTH + 100),
-                random.randint(0, SCREEN_HEIGHT),
-            )
-        )
-        self.speed = random.randint(5, 20)
-
-    # Move the sprite based on speed
-    # Remove the sprite when it passes the left edge of the screen
-    def update(self):
-        self.rect.move_ip(-self.speed, 0)
-        if self.rect.right < 0:
-            self.kill()
-
-# Define the PLANET object by extending pygame.sprite.Sprite
-# Use an image for a better-looking sprite
-class Planet(pygame.sprite.Sprite):
-    def __init__(self):
-        super(Planet, self).__init__()
-        self.surf = pygame.image.load("Sprites/Planets/planet08.png").convert()
-        self.surf.set_colorkey((0, 0, 0), RLEACCEL)
-        self.surf = pygame.transform.scale(self.surf, [50, 50])
-        # The starting position is randomly generated
-        self.rect = self.surf.get_rect(
-            center=(
-                random.randint(SCREEN_WIDTH + 20, SCREEN_WIDTH + 100),
-                random.randint(0, SCREEN_HEIGHT),
-            )
-        )
-
-    # Move the PLANET based on a constant speed
-    # Remove the PLANET when it passes the left edge of the screen
-    def update(self):
-        self.rect.move_ip(-5, 0)
-        if self.rect.right < 0:
-            self.kill()
-
-class Ground(pygame.sprite.Sprite):
-    def __init__(self):
-        super(Ground, self).__init__()
-        self.surf = pygame.image.load("Sprites/Planets.planet05.png").convert()
-        self.surf.set_colorkey((0, 0, 0), RLEACCEL)
-        self.surf = pygame.transform.scale(self.surf, [25, 25])
-        self.surf = pygame.Rect.center
-
-
 # Create custom events for adding a new enemy and a PLANET
 ADDENEMY = pygame.USEREVENT + 1
 pygame.time.set_timer(ADDENEMY, 250)
 ADDPLANET = pygame.USEREVENT + 2
 pygame.time.set_timer(ADDPLANET, 1000)
-ADDGROUND = pygame.USEREVENT + 3
-pygame.time.set_timer(ADDGROUND, 100)
 
-# Instantiate player. Right now, this is just a rectangle.
-player = Player()
+# Instantiate player as a rectangle.
+player = Sprites.Player()
 
 # Create groups to hold enemy sprites, PLANET sprites, and all sprites
 # - enemies is used for collision detection and position updates
@@ -173,14 +79,14 @@ while running:
         # Add a new enemy?
         elif event.type == ADDENEMY:
             # Create the new enemy and add it to sprite groups
-            new_enemy = Enemy()
+            new_enemy = Sprites.Enemy()
             enemies.add(new_enemy)
             all_sprites.add(new_enemy)
         
         # Add a new PLANET?
         elif event.type == ADDPLANET:
             # Create the new PLANET and add it to sprite groups
-            new_planet = Planet()
+            new_planet = Sprites.Planet()
             planets.add(new_planet)
             all_sprites.add(new_planet)
 
@@ -208,7 +114,7 @@ while running:
         player.kill()
         running = False
 
-    # Flip everything to the display
+    # Flip everything and send it to the display
     pygame.display.flip()
 
     # Ensure program maintains a rate of 30 frames per second
