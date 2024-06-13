@@ -21,29 +21,38 @@ SCREEN_HEIGHT = 600
 class Player(pygame.sprite.Sprite):
     def __init__(self):
         super(Player, self).__init__()
-        self.surf = pygame.image.load("Sprites/Characters/tile_0002.png").convert() # load image for sprite
-        self.surf.set_colorkey((0, 0, 0), RLEACCEL) # set the colour to the image's values
-        self.surf = pygame.transform.scale(self.surf, [25, 25]) # scale sprite image down
-        self.rect = self.surf.get_rect(center=(-SCREEN_WIDTH + 50, SCREEN_HEIGHT,)) # where the sprite starts on the screen
+        # create the two different frames for the player sprite
+        self.surf_horizontal = pygame.image.load("Sprites/Characters/tile_0002.png").convert() # load image
+        self.surf_horizontal.set_colorkey((0, 0, 0), RLEACCEL) # set sprite colour
+        self.surf_horizontal = pygame.transform.scale(self.surf_horizontal, [25, 25]) # scale image
+        self.surf_vertical = pygame.image.load("Sprites/Characters/tile_0003.png").convert() # load image
+        self.surf_vertical.set_colorkey((0, 0, 0), RLEACCEL) # set sprite colour
+        self.surf_vertical = pygame.transform.scale(self.surf_vertical, [25, 25]) # scale image
+        self.surf = self.surf_horizontal # set default sprite to the horizontal frame
+        self.rect = self.surf.get_rect(center=(-SCREEN_WIDTH + 50, SCREEN_HEIGHT,))
 
-    # when the sprite is going up or down
-    def vertical(self):
-        self.surf = pygame.image.load("Sprites/Characters/tile_0003.png").convert()
-        self.surf.set_colorkey((0, 0, 0), RLEACCEL)
-        self.surf = pygame.transform.scale(self.surf, [25, 25])
+    # when the sprite is going up or down, change the frame accordingly
+    def change_image(self, image_type):
+        if image_type == "vertical":
+            self.surf = self.surf_vertical
+        else:
+            self.surf = self.surf_horizontal
 
     # Move the sprite based on user keypresses
     def update(self, pressed_keys):
+        image_type = "horizontal"
         if pressed_keys[K_UP]:
             self.rect.move_ip(0, -5)
-            self.vertical() # change the image frame
+            image_type = "vertical"
         if pressed_keys[K_DOWN]:
             self.rect.move_ip(0, 5)
-            self.vertical() # change the image frame
+            image_type = "vertical"
         if pressed_keys[K_LEFT]:
             self.rect.move_ip(-5, 0)
         if pressed_keys[K_RIGHT]:
             self.rect.move_ip(5, 0)
+
+        self.change_image(image_type)
 
         # Keep player on the screen
         if self.rect.left < 0:
@@ -82,9 +91,9 @@ class Enemy(pygame.sprite.Sprite):
 class Planet(pygame.sprite.Sprite):
     def __init__(self):
         super(Planet, self).__init__()
-        self.surf = pygame.image.load("Sprites/Planets/planet08.png").convert()
-        self.surf.set_colorkey((0, 0, 0), RLEACCEL)
-        self.surf = pygame.transform.scale(self.surf, [50, 50])
+        self.surf = pygame.image.load("Sprites/Planets/planet08.png").convert() # load image
+        self.surf.set_colorkey((0, 0, 0), RLEACCEL) # set sprite colour
+        self.surf = pygame.transform.scale(self.surf, [50, 50]) # scale image
         self.rect = self.surf.get_rect(
             center=(
                 random.randint(SCREEN_WIDTH + 20, SCREEN_WIDTH + 100),
