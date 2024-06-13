@@ -22,7 +22,6 @@ from pygame.locals import (
     K_LEFT,
     K_RIGHT,
     K_ESCAPE,
-    #K_SPACE,
     KEYDOWN,
     QUIT,
 )
@@ -55,25 +54,11 @@ class Player(pygame.sprite.Sprite):
             -SCREEN_WIDTH + 50,
             SCREEN_HEIGHT,
         ))
-        #self.pressJump = False
-
-    # jump function
-    """def jump(self):
-        self.jumpCount = [10, 9, 8, 7, 6, 5, 4, 3, 2, 1, 0, -1, -2, -3, -4, -5, -6, -7, -8, -9, -10]
-
-        #self.rect.move_ip(0, -10)
-
-        for frame in self.jumpCount:
-            if self.pressJump:
-                self.rect.move_ip(0, -1)
-            frame += 1"""
 
     # Move the sprite based on user keypresses
     def update(self, pressed_keys):
         if pressed_keys[K_UP]:
             self.rect.move_ip(0, -5)
-            #self.pressJump = True
-            #self.jump()
         if pressed_keys[K_DOWN]:
             self.rect.move_ip(0, 5)
         if pressed_keys[K_LEFT]:
